@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+dinov3_vith16plus_pretrain_lvd1689m.pth
+data/*
+
+*.pth
+
+# Virtual environments
+.venv
