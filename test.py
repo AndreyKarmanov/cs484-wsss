@@ -45,10 +45,10 @@ OUTPUT_DIR   = 'outputs/single_decoder'
 IMG_SIZE     = 224
 BATCH_SIZE   = 32
 NUM_WORKERS  = 4
-EPOCHS       = 30
+EPOCHS       = 10
 LR           = 1e-3
 WEIGHT_DECAY = 1e-4
-BG_THRESHOLD = 0.30   # tune between 0.25–0.45 at inference
+BG_THRESHOLD = 0.45   # tune between 0.25–0.45 at inference
 
 
 # ---------------------------------------------------------------------------
