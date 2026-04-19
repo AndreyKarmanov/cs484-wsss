@@ -40,7 +40,7 @@ from transformers import AutoModel
 # Config — edit these instead of CLI args
 # ---------------------------------------------------------------------------
 
-VOC_ROOT     = '/path/to/VOCdevkit/VOC2012'
+VOC_ROOT     = 'data/VOCdevkit/VOC2012'
 OUTPUT_DIR   = 'outputs/single_decoder'
 IMG_SIZE     = 224
 BATCH_SIZE   = 32
