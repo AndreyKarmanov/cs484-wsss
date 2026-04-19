@@ -17,3 +17,4 @@ sam2.1_hiera_small.pt
 
 # Virtual environments
 .venv
+.env
