@@ -40,7 +40,7 @@ from transformers import AutoModel
 # Config — edit these instead of CLI args
 # ---------------------------------------------------------------------------
 
-VOC_ROOT     = 'data/VOCdevkit/VOC2012'
+VOC_ROOT     = '/path/to/VOCdevkit/VOC2012'
 OUTPUT_DIR   = 'outputs/single_decoder'
 IMG_SIZE     = 224
 BATCH_SIZE   = 32
@@ -218,8 +218,11 @@ class SingleDecoderWSS(nn.Module):
             seg_map: [B, 20, H, W]
             logits:  [B, 20]
         """
-        out          = self.encoder(pixel_values=x)
-        patch_tokens = out.last_hidden_state[:, 1:, :]  # drop [CLS] token
+        out = self.encoder(pixel_values=x)
+        # DINOv3 prepends [CLS] + register tokens before patch tokens.
+        # Skip all of them; num_register_tokens is 3 for ViT-S16, giving 196 true patch tokens.
+        num_prefix   = 1 + self.encoder.config.num_register_tokens  # CLS + registers
+        patch_tokens = out.last_hidden_state[:, num_prefix:, :]
 
         seg_map = self.decoder(patch_tokens)
         seg_map = F.interpolate(seg_map, size=x.shape[2:],
