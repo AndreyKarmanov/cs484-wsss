@@ -10,10 +10,11 @@ dinov3_vith16plus_pretrain_lvd1689m.pth
 data/*
 
 *.pth
+*.pt
+weights/
 sam2.1_hiera_l.yaml
-sam2.1_hiera_large.pt
 sam2.1_hiera_s.yaml
-sam2.1_hiera_small.pt
 
 # Virtual environments
 .venv
+.env
