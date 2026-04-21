@@ -12,10 +12,11 @@ VOC_CLASSES = [
 ]
 
 
-def make_transform(resize_size: int = 448):
+def make_transform(resize_size: int | tuple[int, int] = 448):
+    size = (resize_size, resize_size) if isinstance(resize_size, int) else resize_size
     return v2.Compose([
         v2.ToImage(),
-        v2.Resize((resize_size, resize_size), antialias=True),
+        v2.Resize(size, antialias=True),
         v2.ToDtype(torch.float32, scale=True),
         v2.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
     ])

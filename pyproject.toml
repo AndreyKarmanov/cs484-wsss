@@ -17,6 +17,7 @@ dependencies = [
     "opencv-python>=4.13.0.92",
     "pillow>=12.2.0",
     "sam-2",
+    "scikit-image>=0.26.0",
     "scikit-learn>=1.8.0",
     "segment-anything",
     "termcolor>=3.3.0",
