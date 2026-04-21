@@ -1,4 +1,4 @@
-"""CAM-based Prompting Module (CPM), ported from S2C (CVPR 2024).
+"""CAM-based Prompting Module (CPM), from S2C (CVPR 2024).
 
 Reference: Kweon & Yoon, "From SAM to CAMs: Exploring Segment Anything Model
 for Weakly Supervised Semantic Segmentation," CVPR 2024.
@@ -23,11 +23,11 @@ from skimage.feature import peak_local_max
 class CPMResult:
     """Output of `cpm_from_cams` for a single image."""
 
-    pgt: np.ndarray  # (H, W) uint8, class index in [0, num_classes-1] for fg, num_classes for bg
-    score: np.ndarray  # (H, W) float32, aggregated confidence (0 where bg)
-    masks: dict[int, np.ndarray]  # {class_idx: (H, W) bool} the chosen SAM mask per class
-    confs: dict[int, float]  # {class_idx: float} SAM mask-quality score for the chosen mask
-    points: dict[int, np.ndarray]  # {class_idx: (N, 2) int xy} positive prompts used
+    pgt: np.ndarray
+    score: np.ndarray
+    masks: dict[int, np.ndarray]
+    confs: dict[int, float]
+    points: dict[int, np.ndarray]
 
 
 def cam_to_cpm_points(
@@ -37,17 +37,6 @@ def cam_to_cpm_points(
     max_filter_size: int = 3,
 ) -> np.ndarray:
     """S2C's local-peak prompt extraction for one (H, W) CAM in [0, 1].
-
-    Returns positive point prompts in image coords as an (N, 2) int array of
-    `(x, y)` pairs. Always includes the global argmax. Local peaks below
-    `th_multi` are dropped.
-
-    Mirrors the "Sample local peaks" block of S2C's `model_s2c.py`. Notable
-    quirks preserved verbatim from the reference:
-
-      * The 3x3 maximum filter is applied to the CAM before peak finding.
-      * `peaks_valid[1:]` drops the first local peak before concatenating with
-        the global argmax (the global argmax is otherwise duplicated).
     """
     H, W = cam.shape
 
@@ -89,27 +78,7 @@ def cpm_from_cams(
     min_distance: int = 20,
     idx_max_sam: int = 2,
 ) -> CPMResult:
-    """Run S2C-style CPM on one image: CAMs -> point prompts -> SAM2 -> aggregate.
-
-    Args:
-        image: either a path, a PIL.Image, or an (H, W, 3) uint8 numpy array.
-            Forwarded to `predictor.set_image`.
-        cams: `{class_idx: (H, W) float}` per-class CAMs. Should already be in
-            the original image's pixel space (matches your existing
-            `result["dino_refined"]` format). Each CAM is internally re-normalized
-            to [0, 1] by dividing by its max, like S2C's `cam_ms` step.
-        predictor: a SAM 2 `SAM2ImagePredictor` (already constructed).
-        num_classes: total number of foreground classes (VOC: 20). The output
-            `pgt` uses this value as the background label.
-        th_multi: minimum normalized-CAM value for a local peak to count
-            as a positive prompt (S2C default 0.5).
-        min_distance: NMS radius for local peaks in CAM pixels (S2C default 20).
-        idx_max_sam: which of SAM's 3 multimask outputs to take. S2C found
-            index 2 (the largest/most-inclusive) to work best empirically.
-
-    Returns:
-        `CPMResult`. The `pgt` field is the headline output: an (H, W) uint8
-        class-index map where `pgt == num_classes` means background.
+    """Run CPM on one image: CAMs -> point prompts -> SAM2 -> aggregate.
     """
     if isinstance(image, str):
         img_np = np.array(Image.open(image).convert("RGB"))
@@ -157,9 +126,6 @@ def cpm_from_cams(
         confs_per_class[c] = target_conf
         points_per_class[c] = points_xy
 
-        # S2C-style confidence-based aggregation:
-        # mean CAM inside the mask is constant per class; SAM gives one
-        # confidence per mask, so the per-pixel score is also constant inside.
         if target_mask.any():
             mean_cam_inside = float(cam_norm[target_mask].mean())
             agg_score = target_conf * mean_cam_inside
