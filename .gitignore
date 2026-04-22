@@ -18,3 +18,4 @@ sam2.1_hiera_s.yaml
 # Virtual environments
 .venv
 .env
+results/
