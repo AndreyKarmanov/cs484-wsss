@@ -116,8 +116,7 @@ def make_voc_datasets(root: str = "./data", resize_size: int | tuple[int, int] =
 def get_wsss_dataloaders(
     train_ds,
     val_ds,
-    batch_size: int = 16,
-    num_workers: int = 4
+    batch_size: int = 16
 ):
     """
     Returns train_loader (shuffled), seq_train_loader (unshuffled, for caching),
@@ -127,28 +126,18 @@ def get_wsss_dataloaders(
         train_ds,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=num_workers,
         pin_memory=True,
         drop_last=True,
-        collate_fn=wsss_collate_fn,
-    )
-    seq_train_loader = DataLoader(
-        train_ds,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=True,
         collate_fn=wsss_collate_fn,
     )
     val_loader = DataLoader(
         val_ds,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=num_workers,
         pin_memory=True,
         collate_fn=wsss_collate_fn,
     )
-    return train_loader, seq_train_loader, val_loader
+    return train_loader, val_loader
 
 
 def evaluate_masks(preds: torch.Tensor, targets: torch.Tensor, num_classes: int = 21, ignore_index: int = 255) -> tuple[torch.Tensor, torch.Tensor, float]:

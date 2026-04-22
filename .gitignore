@@ -12,9 +12,6 @@ data/*
 *.pth
 *.pt
 weights/
-sam2.1_hiera_l.yaml
-sam2.1_hiera_s.yaml
-sam2.1_hiera_t.yaml
 
 # Virtual environments
 .venv
