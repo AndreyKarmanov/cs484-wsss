@@ -12,6 +12,39 @@ VOC_CLASSES = [
 ]
 
 
+def _make_voc_palette(N: int = 256) -> np.ndarray:
+    """Standard PASCAL VOC 256-color palette as an [N, 3] uint8 array.
+
+    Generated algorithmically with the same bit-interleaving recipe used by the
+    VOC devkit (see e.g. `VOClabelcolormap.m`). Index 0 is background, indices
+    1..20 are the foreground classes (in the canonical VOC order matching
+    `VOC_CLASSES`), and index 255 is the void/ignore color (white).
+    """
+    palette = np.zeros((N, 3), dtype=np.uint8)
+    for i in range(N):
+        r = g = b = 0
+        c = i
+        for j in range(8):
+            r |= ((c >> 0) & 1) << (7 - j)
+            g |= ((c >> 1) & 1) << (7 - j)
+            b |= ((c >> 2) & 1) << (7 - j)
+            c >>= 3
+        palette[i] = (r, g, b)
+    return palette
+
+
+VOC_PALETTE = _make_voc_palette()
+
+
+def colorize(label_map: np.ndarray) -> np.ndarray:
+    """Map a [H, W] integer label map to an [H, W, 3] uint8 RGB image.
+
+    Indices 0..20 are background + 20 VOC classes; 255 (void) renders as white.
+    """
+    label_map = np.clip(label_map, 0, len(VOC_PALETTE) - 1)
+    return VOC_PALETTE[label_map]
+
+
 def make_transform(resize_size: int | tuple[int, int] = 448):
     size = (resize_size, resize_size) if isinstance(resize_size, int) else resize_size
     return v2.Compose([
@@ -55,8 +88,8 @@ def wsss_collate_fn(batch):
     return indices, images, labels
 
 
-def make_voc_datasets(root: str = "./data"):
-    transform = make_transform()
+def make_voc_datasets(root: str = "./data", resize_size: int | tuple[int, int] = 448):
+    transform = make_transform(resize_size)
     voc_train = torchvision.datasets.VOCSegmentation(
         root=root, year="2012", image_set="train", download=False
     )
