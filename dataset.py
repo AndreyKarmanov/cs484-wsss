@@ -105,10 +105,10 @@ def wsss_collate_fn(batch):
 def make_voc_datasets(root: str = "./data", resize_size: int | tuple[int, int] = 448):
     transform = make_transform(resize_size)
     voc_train = torchvision.datasets.VOCSegmentation(
-        root=root, year="2012", image_set="train", download=False
+        root=root, year="2012", image_set="train", download=True
     )
     voc_val = torchvision.datasets.VOCSegmentation(
-        root=root, year="2012", image_set="val", download=False
+        root=root, year="2012", image_set="val", download=True
     )
     return WSSSDataset(voc_train, transform), WSSSDataset(voc_val, transform)
 
