@@ -3,7 +3,7 @@ name = "cs484-wsss"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "accelerate>=1.13.0",
     "datasets>=4.8.4",
@@ -16,6 +16,8 @@ dependencies = [
     "numpy>=2.4.4",
     "opencv-python>=4.13.0.92",
     "pillow>=12.2.0",
+    "pydensecrf2",
+    "python-dotenv>=1.2.2",
     "sam-2",
     "scikit-image>=0.26.0",
     "scikit-learn>=1.8.0",
