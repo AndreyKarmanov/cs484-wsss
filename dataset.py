@@ -164,9 +164,7 @@ def evaluate_masks(preds: torch.Tensor, targets: torch.Tensor, num_classes: int 
         intersection[c] = (pred_c & target_c).sum()
         union[c] = (pred_c | target_c).sum()
         
-    iou = intersection / union.clamp(min=1e-8)
-    miou = iou[union > 0].mean().item()
-    return intersection, union, miou
+    return intersection, union
 
 
 @torch.no_grad()
